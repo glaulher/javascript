@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import api from '../services/api';
 
 export default class Main extends Component {
   static navigationOptions = {
@@ -19,11 +20,26 @@ export default class Main extends Component {
     headerTintColor: '#FFF',
   };
 
+  state = {
+    docs: [],
+  };
+  componentDidMount() {
+    this.loadProducts();
+  }
+  // tem que ser função pra conseguir pegar o this.
+  loadProducts = async () => {
+    const response = await api.get('/products');
+    const {docs} = response.data;
+    this.setState({docs});
+  };
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>Bem vindo ao React-native!</Text>
-        <View style={styles.box}></View>
+        {this.state.docs.map(product => (
+          <Text key={product._id}>{product.title}</Text>
+        ))}
       </View>
     );
   }
@@ -38,10 +54,5 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  box: {
-    height: 60,
-    width: 60,
-    backgroundColor: '#f00',
   },
 });
